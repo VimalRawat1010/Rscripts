@@ -8,8 +8,21 @@
 # Latest modification: 
 #######################
 
-
+rm(list=ls())
 library("SRAdb")
+
+#args <- commandArgs(trailingOnly=TRUE)
+#n.args = length(args)
+#
+# Print usage of script
+# print.usage <- function(){
+#	cat("Rscript SRA_download.r \n")
+#}
+#if (n.args < 1) {
+#  print.usage()
+#  q(save="no",status=1)
+#}
+
 
 # Specify several file paths and directories in which
 # you would like to work in.
@@ -18,23 +31,16 @@ metaDB <- "../../../../extraSpace/SRAmetadb.sqlite"
 mySamplesFile <- "RNA-samples.txt"
 autoAnnotation <- "automaticallyGeneratedAnnotation.csv"
 
-# Check for a local copy of the database and
-# download it if it does not exist.
+# Check for a local copy of the database and download it if it does not exist.
 if (!file.exists(metaDB)) { getSRAdbFile(dirname(metaDB)) }
 
 # Open a connection to the database
 sra_con <- dbConnect(SQLite(), metaDB)
 
-# Here we assume that you have a precompiled list of 
-# samples/experiments/studies which are of interest to you.
-# See Note 3 for full text searches in the SRA metadata.
-# Read in the list of experiments you are interested in.
+# Here a precompiled list of samples/experiments/studies is needed which are of interest.
 samples <- scan(mySamplesFile, what = "character")
 
-# You may have a collection of experiments and individual runs. 
-# However, only individual runs can be downloaded. Note that 
-# the conversion of a certain SRA ID type to another requires
-# the different query types not to be mixed.
+# Only individual runs can be downloaded. 
 sampleTypes <- unique(substr(samples, 1, 3))
 splitSamples <- lapply(sampleTypes, function(x)
   grep(paste0("^", x), samples, value = TRUE))
@@ -45,7 +51,7 @@ allSRAids <- do.call("rbind", conversions)
 # Retrieve the remaining metadata to determine
 # the sequencing platform, the read length, etc.
 SRAdata <- lapply(allSRAids$run, function(x)
-  getSRA(search_terms = x, out_types = "sra", sra_con))
+   getSRA(search_terms = x, out_types = "sra", sra_con))
 SRAdata <- do.call("rbind", SRAdata)
 rownames(SRAdata) <- SRAdata$run # for data access
 SRAdata$approxRL <- SRAdata$bases/SRAdata$spots
@@ -53,13 +59,10 @@ summary(SRAdata$spots)    # the total number of reads
 summary(SRAdata$approxRL) # the average read lengths
 table(SRAdata$platform)   # the sequencing platform
 SRAdata$sample_name[1:15] # the names of the first 15 samples
-# The sample names are not always too informative
-# and I recommend renaming them.
 
 # Search for strand-specific samples with regular
-# expression. Note that this gives no guarantee
-# for strand specificity - in any case, this
-# should be verified manually.
+# expression. This should be verified manually.
+
 posExp <- "strand[[:space:]{0,1}|-]specific"
 negExp <- paste0("no[[:alpha:]{0,1}][[:space:]{0,1}|-]", posExp)
 strSpec <- apply(SRAdata, 1, function(x)
@@ -71,12 +74,6 @@ sum(strSpec)  # the number of strand specific libraries
 SRAdata$strSpec <- as.numeric(strSpec)
 
 # Try to download FASTQ files (this may fail).
-# If necessary, check the availability with 
-# the function getFASTQinfo(). For details
-# see ?getFASTQinfo or the SRAdb manual
-
-
-#getFASTQfile(allSRAids$run, sra_con, readsDir, 'ftp')
 
 # Alternatively download the SRA files and convert them.
 # If necessary, check the availability with 
