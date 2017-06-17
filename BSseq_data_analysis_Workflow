@@ -1,0 +1,72 @@
+"""
+Author: Vimal Rawat
+Affiliation: University of Zurich (UZH)
+Aim: A simple Snakemake workflow to process paired-end illumina BS-seq reads using Bismark.
+Date: 01.02.2017
+Run: snakemake  --cores <number of cores> -s <Snakefile>   
+Version 0.0.1
+Latest modification: 
+
+"""
+
+
+def message(msg):
+    print (msg)
+
+################################################################################
+
+localrules:trimming,final
+
+##--------------------------------------------------------------------------------------##
+## The list of samples to be processed
+##--------------------------------------------------------------------------------------##
+
+SAMPLES, = glob_wildcards("../../Aphid/RAW_DATA/{smp}_R1.fastq.gz")
+NB_SAMPLES = len(SAMPLES)
+
+for smp in SAMPLES:
+  message("Sample " + smp + " will be processed")
+
+
+### Rule 0
+rule final: 
+  input: expand("../../Aphid/bismark_output/bam/{smp}/{smp}.bam", smp=SAMPLES)
+
+
+### Rule1
+rule trimming:
+  input:  fwd="../../Aphid/RAW_DATA/{smp}_R1.fastq.gz", rev="/home/ubuntu/data/5TB/Aphid/RAW_DATA/{smp}_R2.fastq.gz"
+  output: fwd="../../Aphid/trimmed/{smp}_R1_val_1.fq.gz", 
+          rev="../../Aphid/trimmed/{smp}_R2_val_2.fq.gz", 
+           
+  message: """--- Trimming."""
+  shell: """
+        trim_galore  --paired  -o ../../Aphid/trimmed --no_report_file   -q 26  {input.fwd} {input.rev}    &> {input.fwd}.log                                                                               
+  """
+
+### Rule2
+rule fastqc:
+  input:  fwd="../../Aphid/trimmed/{smp}_R1_val_1.fq.gz",
+          rev="../../Aphid/trimmed/{smp}_R2_val_2.fq.gz"
+  output: fwd="../../Aphid/fastqc/{smp}_R1_t.fq_fastqc.zip", rev="../../Aphid/fastqc/{smp}_R2_t.fq_fastqc.zip"
+  message: """--- Quality check of raw data with Fastqc."""
+  shell: """                                                                                                                                                                                      
+              /home/ubuntu/FastQC/fastqc  --outdir  ../../Aphid//fastqc/ --extract  -f fastq {input.fwd} {input.rev}                                                                                                                                                                                           """
+
+### Rule3
+rule bismark:
+        input:fwd="../../Aphid/trimmed/{smp}_R1_val_1.fq.gz", 
+              rev="../../Aphid/trimmed/{smp}_R2_val_2.fq.gz"
+        params:  index="/home/ubuntu/data/extraSpace/ATH_Genome/Genome/"
+        output: "../../Aphid/bismark_output/bam/{smp}/{smp}.bam"
+        shell: """
+               
+                 /home/ubuntu/bismark_v0.15.0/bismark  \
+                        -o ../../Aphid/bismark_output/bam/{smp}    \
+                        --fastq                        \
+                        -n 1                           \
+                        --multicore 10                  \
+                        --bowtie2                      \
+                        {params.index}                 \
+                        -1  {input.fwd}  -2 {input.rev}
+                """
