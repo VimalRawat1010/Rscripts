@@ -1,8 +1,8 @@
 ##################
 # Author: V. Rawat
 # Affiliation: UZH
-# Aim: A simple R script to download SRA data. SRA ids should be provided in a file.
-# Date: 
+# Aim: A simple R script to download SRA data. SRA ids should be provided in a file (RNA-samples.txt).
+# Date: 10.01.2017
 # Run: Rscript SRA_download.r     
 # Version 0.0.1
 # Latest modification: 
