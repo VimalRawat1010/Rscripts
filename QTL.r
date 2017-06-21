@@ -96,9 +96,7 @@ title("different thresholds for composite interval mapping") #add plot title
 
 
 ##########################################################################################
-################## WE STOPPED HERE IN SATURDAY'S CLASS ###################################
 ##########################################################################################
-
 
 #get confidence interval for QTL location#
 #using LOD drop#
@@ -113,19 +111,75 @@ bootoutputtrait=scanoneboot(dataIM, pheno.col=3, chr=1, model="normal", method="
 plot(bootoutputtrait)
 summary(bootoutputtrait)
 
+#plot QTL effect
+CRY2<-find.marker(dataIM, 1, 7.2)
+effectplot(dataIM, pheno.col=3, mname1=CRY2)
+
+#fit multiple QTL model
+summary(lod1traitIM, perms=maxlod1traitIM, alpha=0.05, pvalues=TRUE)
+# take out several QTLs and make QTL object
+qc <- c("1", "4", "5")
+qp <- c(7.12, 34.0, 108.00)
+qtl <- makeqtl(dataIM, qc, qp, what="prob")
+summary(qtl)
+lod.add <- fitqtl(dataIM, pheno.col=3, qtl, formula=y~Q1+Q2+Q3, method="hk")
+summary(lod.add)
 
 
+#complete 2-dimensional, 2 QTL scan#
+lod2trait=scantwo(dataIM, pheno.col=3, model=c("normal"), method=c("hk"))
+plot(lod2trait)
 
+#use stepwise model building#
 
+lod2trait=scantwo(dataIM, pheno.col=3, model=c("normal"), method=c("hk"))
+perm1=scantwo(dataIM, pheno.col=3, model=c("normal"), method=c("hk"), n.perm=25)
+perm2=scantwo(dataIM, pheno.col=3, model=c("normal"), method=c("hk"), n.perm=25)
+perm3=scantwo(dataIM, pheno.col=3, model=c("normal"), method=c("hk"), n.perm=25)
+perm4=scantwo(dataIM, pheno.col=3, model=c("normal"), method=c("hk"), n.perm=25)
+perm5=scantwo(dataIM, pheno.col=3, model=c("normal"), method=c("hk"), n.perm=25)
+perm6=scantwo(dataIM, pheno.col=3, model=c("normal"), method=c("hk"), n.perm=25)
+perm7=scantwo(dataIM, pheno.col=3, model=c("normal"), method=c("hk"), n.perm=25)
+perm8=scantwo(dataIM, pheno.col=3, model=c("normal"), method=c("hk"), n.perm=25)
+perm9=scantwo(dataIM, pheno.col=3, model=c("normal"), method=c("hk"), n.perm=25)
+perm10=scantwo(dataIM, pheno.col=3, model=c("normal"), method=c("hk"), n.perm=25)
+perm11=scantwo(dataIM, pheno.col=3, model=c("normal"), method=c("hk"), n.perm=25)
+perm12=scantwo(dataIM, pheno.col=3, model=c("normal"), method=c("hk"), n.perm=25)
+perm13=scantwo(dataIM, pheno.col=3, model=c("normal"), method=c("hk"), n.perm=25)
+perm14=scantwo(dataIM, pheno.col=3, model=c("normal"), method=c("hk"), n.perm=25)
+perm15=scantwo(dataIM, pheno.col=3, model=c("normal"), method=c("hk"), n.perm=25)
+perm16=scantwo(dataIM, pheno.col=3, model=c("normal"), method=c("hk"), n.perm=25)
+perm17=scantwo(dataIM, pheno.col=3, model=c("normal"), method=c("hk"), n.perm=25)
+perm18=scantwo(dataIM, pheno.col=3, model=c("normal"), method=c("hk"), n.perm=25)
+perm19=scantwo(dataIM, pheno.col=3, model=c("normal"), method=c("hk"), n.perm=25)
+perm20=scantwo(dataIM, pheno.col=3, model=c("normal"), method=c("hk"), n.perm=25)
+perm21=scantwo(dataIM, pheno.col=3, model=c("normal"), method=c("hk"), n.perm=25)
+perm22=scantwo(dataIM, pheno.col=3, model=c("normal"), method=c("hk"), n.perm=25)
+perm23=scantwo(dataIM, pheno.col=3, model=c("normal"), method=c("hk"), n.perm=25)
+perm24=scantwo(dataIM, pheno.col=3, model=c("normal"), method=c("hk"), n.perm=25)
+perm25=scantwo(dataIM, pheno.col=3, model=c("normal"), method=c("hk"), n.perm=25)
+perm26=scantwo(dataIM, pheno.col=3, model=c("normal"), method=c("hk"), n.perm=25)
+perm27=scantwo(dataIM, pheno.col=3, model=c("normal"), method=c("hk"), n.perm=25)
+perm28=scantwo(dataIM, pheno.col=3, model=c("normal"), method=c("hk"), n.perm=25)
+perm29=scantwo(dataIM, pheno.col=3, model=c("normal"), method=c("hk"), n.perm=25)
+perm30=scantwo(dataIM, pheno.col=3, model=c("normal"), method=c("hk"), n.perm=25)
+perm31=scantwo(dataIM, pheno.col=3, model=c("normal"), method=c("hk"), n.perm=25)
+perm32=scantwo(dataIM, pheno.col=3, model=c("normal"), method=c("hk"), n.perm=25)
+perm33=scantwo(dataIM, pheno.col=3, model=c("normal"), method=c("hk"), n.perm=25)
+perm34=scantwo(dataIM, pheno.col=3, model=c("normal"), method=c("hk"), n.perm=25)
+perm35=scantwo(dataIM, pheno.col=3, model=c("normal"), method=c("hk"), n.perm=25)
+perm36=scantwo(dataIM, pheno.col=3, model=c("normal"), method=c("hk"), n.perm=25)
+perm37=scantwo(dataIM, pheno.col=3, model=c("normal"), method=c("hk"), n.perm=25)
+perm38=scantwo(dataIM, pheno.col=3, model=c("normal"), method=c("hk"), n.perm=25)
+perm39=scantwo(dataIM, pheno.col=3, model=c("normal"), method=c("hk"), n.perm=25)
+perm40=scantwo(dataIM, pheno.col=3, model=c("normal"), method=c("hk"), n.perm=25)
+maxlod2trait=c(perm1, perm2, perm3, perm4, perm5, perm6, perm7, perm8, perm9, perm10, perm11, perm12, perm13, perm14, perm15, perm16, perm17, perm18, perm19,perm20, perm21, perm22, perm23, perm24, perm25, perm26, perm27, perm28, perm29, perm30, perm31, perm32, perm33, perm34, perm35, perm36, perm37, perm38, perm39, perm40) 
 
+save(maxlod2trait, file="permtest.R")
+load("permtest.R")
 
-
-
-
-
-
-
-
-
-
-
+summary(maxlod2trait)
+pens<-calc.penalties(maxlod2trait)
+traitstepwise <- stepwiseqtl(dataIM, pheno.col=3, max.qtl=6, method="hk", penalties=pens, keeplodprofile=TRUE, keeptrace=TRUE)
+plotLodProfile(traitstepwise)
+plotModel(traitstepwise)
