@@ -24,11 +24,31 @@
 #     REVISION: ---
 #===============================================================================
 
+### Clear the workspace
+rm(list =ls())
+
+### Set path to your R default library (or your personal R library)
+.libPaths("~/R_Library/")
+
+### I defined a function to check and install if some R packages are not present which are needed for this code to run.
+install_pack <-  function(package_list) {
+  # package_list: is a list of packages needs to be installed
+  # Returns nothing :)
+    for (package in package_list) {
+     if(!require(package,character.only=TRUE)) {
+       install.packages(package , dependencies = TRUE)
+       suppressMessages(suppressWarnings(require(package)))
+      }
+    }
+}
+
+### Calling  install_pack function
+install_pack(c("DESeq"))
 
 
 
 ###  set working directory : Directory where input files are located and plots and result files will be saved
-setwd("/home/vimal/results/") # Replace "/home/vimal/results/" to desired path
+setwd("~/DESeqResults/") # Replace to desired path
 
 ### Load DESeq package : install the package if you havn't installed it already with "install" command
 library(DESeq)
