@@ -1,7 +1,9 @@
 .libPaths("/home/vimal/R_Library/")
 library(minet)
-library("Rgraphviz")
-
+library(Rgraphviz)
+library(reshape)
+library(reshape2)
+require(data.table) 
 
 # build.mim 
 #takes the dataset as input and computes the mutual information beetween all pair of
@@ -11,9 +13,11 @@ TF_Exp_FPKM <-read.table("/media/vimal/DATA_only/FG_Transcriptome_Project/VR/Res
 TF_Exp_FPKM_M <-t(data.matrix(TF_Exp_FPKM))
 
 mim <- build.mim(TF_Exp_FPKM_M, estimator = "spearman", disc = "none", nbins = sqrt(NROW(TF_Exp_FPKM_M)))
+mim_melt <- setDT(melt(mim))
 
-mim_melt <- melt(mim)
+mim_melt <- mim_melt[mim_melt$value >6]
 
+#newdata <- mim_melt[$V1myvars]
 # This function takes the mutual information matrix as input in order to return the infered network
 # according to the Aracne algorithm.   This algorithm applies the data processing inequality to all
 # triplets of nodes in order to remove the least significant edge in each triplet

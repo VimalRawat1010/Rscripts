@@ -30,6 +30,8 @@ getMethylationStats(myobj[[2]],plot=F,both.strands=F)
 
 sampleNames =list("test1","test2","ctrl1","ctrl2")
 
+
+##################### Not so nice Way
 methBedRead <- function(file.list,sampleNames) {
                 obj =list()
                 for (i in 1:length(file.list))
@@ -40,12 +42,42 @@ methBedRead <- function(file.list,sampleNames) {
                 return (obj)
 }
 
+##### More precise way: S3 method
+methBedRead <- function(file.list,sampleNames)
+{
+  readObj =list()
+  for (i in 1:length(file.list))
+  {
+    file = as.character(file.list[i])
+    readObj[[i]] <- data.frame(read.table(file))
+  }
 
-  vimaObj =methBedRead(file.list,sampleNames)
-
-
-
+    ## Set the name for the class
+    class(readObj) <- append(class(readObj),"MethPlotR")
+    return(readObj)
 }
+
+
+##### Best way: S4 method
+
+methBedRead <- setClass(
+  #Setting Name
+  "methBedRead",
+
+
+
+)
+
+
+
+  vimalObj =methBedRead(file.list,sampleNames)
+
+
+
+
+
+
+
 
 
 
