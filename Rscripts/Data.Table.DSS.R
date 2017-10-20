@@ -9,11 +9,11 @@ library(grDevices)
 library(cummeRbund)
 
 
-setwd("/Users/vimal/Desktop/test/")
-filesLE <- list.files(path = "/Users/vimal/Desktop/test/",pattern = "_LE")
-filesBB <- list.files(path = "/Users/vimal/Desktop/test/",pattern = "_BB")
-filesAN <- list.files(path = "/Users/vimal/Desktop/test/",pattern = "_Ancestral")
-files <-c(filesAN,filesLE)
+setwd("/media/vimal/10b357a2-8127-40d9-ab03-3e38ea800ce2/Aphid/DSS_Analysis/")
+filesLE <- list.files(path = "/media/vimal/10b357a2-8127-40d9-ab03-3e38ea800ce2/Aphid/DSS_Analysis/",pattern = "_LE")
+filesBB <- list.files(path = "/media/vimal/10b357a2-8127-40d9-ab03-3e38ea800ce2/Aphid/DSS_Analysis/",pattern = "_BB")
+filesAN <- list.files(path = "/media/vimal/10b357a2-8127-40d9-ab03-3e38ea800ce2/Aphid/DSS_Analysis/",pattern = "_Ancestral")
+files <-c(filesAN,filesLE,filesBB )
 temp <- mclapply(files, fread, sep=" ")
 ALL <- temp[[1]]
 counter = 0
@@ -169,6 +169,14 @@ entropySJ <- function(df.sj,colNum) {
     df.sj[i, Entropy:= entropy.empirical(b, unit="log2")]
   }
   return(df.sj)
+}
+
+
+
+#######
+MPD <- function (y, v)
+{
+  return(r = (y*100)/v)
 }
 
 
