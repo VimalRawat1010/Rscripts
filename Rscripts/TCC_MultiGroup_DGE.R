@@ -131,47 +131,65 @@ table(tcc$estimatedDEG)
 
 ##################################
 
+library(doParallel)result
+library(foreach)
+library(plyr)
+library(baySeq)
+library(TCC)
+
+library(BiocParallel)
+register(MulticoreParam(1))
+
 ExpData <- read.table("/media/vimal/DATA_only/FG_Transcriptome_Project/VR/Results_Gene_Expression/RNAseq.txt",
                      header= T, row.names=1)
 
-ExpData.mat <- as.matrix(as.data.frame(lapply(ExpData, as.integer)))
-ExpData.mat <- as.matrix(as.data.frame(lapply(ExpData, as.integer)))
 
-ExpData.Labels <- read.table(
-  "/media/vimal/DATA_only/FG_Transcriptome_Project/VR/Results_Gene_Expression/RNAseqSampleInfo.txt",
+filter <- as.logical(rowSums(ExpData) > 0)
+ExpData.new <- ExpData[filter,]
+
+
+ExpData.mat <- as.matrix(as.data.frame(lapply(ExpData.new, as.integer)))
+
+ExpData.Labels <- read.table("/media/vimal/DATA_only/FG_Transcriptome_Project/VR/Results_Gene_Expression/RNAseqSampleInfo.txt",
   header= F, row.names=1)
+ExpData.Labels <- factor(ExpData.Labels$V2)
 levels(ExpData.Labels)
 length(levels(ExpData.Labels))
 group <- as.numeric(ExpData.Labels)
 
-#numCores <- detectCores()
-#cl <- makeCluster(4)
-library(doParallel)
-library(foreach)
-library(plyr)
-cl <- makeCluster(4)  # Use 3 cores
-registerDoParallel(cl) # register these 3 cores with the "foreach" package
-
-
+names(group) <- colnames(ExpData)
 
 
 tcc <- new("TCC", ExpData.mat, group)
 tcc <- filterLowCountGenes(tcc, low.count = 0)
+tcc <- calcNormFactors(tcc, norm.method = "tmm", test.method = "edger", iteration = 3, FDR = 0.01, floorPDEG = 0.05)
 
+tcc <- estimateDE(tcc, test.method = "edger",FDR = 0.1, samplesize = 100)
+#tcc <- estimateDE(tcc, test.method = "deseq2",FDR = 0.1, samplesize = 32827)
 
-tcc <- calcNormFactors(tcc, norm.method = "tmm", test.method = "edger",
-                       iteration = 1, FDR = 0.1, floorPDEG = 0.05)
+result <- getResult(tcc, sort = FALSE)
 
-library(baySeq)
-tcc <- estimateDE(tcc, test.method = "bayseq",FDR = 0.1, samplesize = samplesize)
-result <- getResult(tcc, sort = TRUE)
-head(result)
+filter <- as.logical(rowSums(ExpData) = 10)
+ExpData.new <- ExpData[filter,]
+
+result$gene_id <- rownames(ExpData.new)
+result.sorted <- result[order(result$rank),]
+
+head(result.sorted)
 table(tcc$estimatedDEG)
 
 
+install.packages("viridis")
+library(viridis)
 
 
+top100 <- result.sorted[result.sorted$rank < 100,]
+top100_heatmap <- ExpData[rownames(ExpData) %in% top100$gene_id,]
+heatmap(log10(data.matrix(top100_heatmap)+1), Colv=NA, scale="row", col=colorRampPalette(c('blue', 'white', 'red'))(100), ColSideColors=rainbow(29)[group] )
 
+bottom100 <- result.sorted[result.sorted$rank > 30000,]
+bottom100_heatmap <- ExpData[rownames(ExpData) %in% bottom100$gene_id,]
+heatmap.2(log10(data.matrix(bottom100_heatmap) +1), Colv=NA, scale="row", color.palette=viridis, ColSideColors=rainbow(29)[group] , trace= "none")
 
 
 
