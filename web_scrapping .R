@@ -19,10 +19,10 @@ require('ROAuth')
 require('RCurl')
 
 library(RCurl)
-consumer_key <- "tD2bCFAXCtdHoFABxCXW5MSEI1"
-consumer_secret <- "H5LQ7UbjTvRp9HJKEU3ixzaKbV38OrI7zdCfPqhbSra2a6Uswl1"
-access_token <- "1103421396-yyE408tG2g9Ce5WaO3Mr7q9BAsBfX9Za6sEBMBX1"
-access_secret <- "OYFmPUMrmJMbLfDZSjPdkulE2VOmZ6Flcn8dk871hrxvj1"
+consumer_key <- ""
+consumer_secret <- ""
+access_token <- ""
+access_secret <- ""
 
 setup_twitter_oauth(consumer_key, consumer_secret, access_token, access_secret)
 
